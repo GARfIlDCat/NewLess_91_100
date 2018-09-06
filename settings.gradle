@@ -1,1 +1,1 @@
-include ':app', ':p0911asynctaskrotate', ':p0921servicesimple', ':p0931servicestop', ':p0941servicekillclient', ':p0942servicekillserver', ':p0951servicebackpendingintent', ':p0961servicebackbroadcast', ':p0971servicebindclient'
+include ':app', ':p0911asynctaskrotate', ':p0921servicesimple', ':p0931servicestop', ':p0941servicekillclient', ':p0942servicekillserver', ':p0951servicebackpendingintent', ':p0961servicebackbroadcast', ':p0971servicebindclient', ':p0972servicebindserver', ':p0981servicebindinglocal', ':p0991servicenotification'

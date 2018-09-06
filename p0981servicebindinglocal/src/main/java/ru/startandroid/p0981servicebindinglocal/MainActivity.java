@@ -1,34 +1,38 @@
-package ru.startandroid.p0971servicebindclient;
+package ru.startandroid.p0981servicebindinglocal;
 
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    final String SERVICE_PACKAGE_NAME = "ru.startandroid.p0972servicebindserver";
     final String LOG_TAG = "myLogs";
 
     boolean bound = false;
     ServiceConnection sConn;
     Intent intent;
+    MyService myService;
+    TextView tvInterval;
+    long interval;
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        intent = new Intent(SERVICE_PACKAGE_NAME + ".MyService");
-        // без этой строчки требует, чтобы сервис был указан явно (в уроке это не отражено)
-        intent.setPackage(SERVICE_PACKAGE_NAME);
+        tvInterval = findViewById(R.id.tvInterval);
+        intent = new Intent(this, MyService.class);
 
         sConn = new ServiceConnection() {
+
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 Log.d(LOG_TAG, "MainActivity onServiceConnected");
+                myService = ((MyService.MyBinder) binder).getService();
                 bound = true;
             }
 
@@ -39,26 +43,33 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    public void onClickStart(View v) {
-        startService(intent);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        bindService(intent, sConn, 0);
     }
 
-    public void onClickStop(View v) {
-        stopService(intent);
-    }
-
-    public void onClickBind(View v) {
-        bindService(intent, sConn, BIND_AUTO_CREATE);
-    }
-
-    public void onClickUnBind(View v) {
+    @Override
+    protected void onStop() {
+        super.onStop();
         if (!bound) return;
         unbindService(sConn);
         bound = false;
     }
 
-    protected void onDestroy() {
-        super.onDestroy();
-        onClickUnBind(null);
+    public void onClickStart(View v) {
+        startService(intent);
+    }
+
+    public void onClickUp(View v) {
+        if (!bound) return;
+        interval = myService.upInterval(500);
+        tvInterval.setText("interval = " + interval);
+    }
+
+    public void onClickDown(View v) {
+        if (!bound) return;
+        interval = myService.downInterval(500);
+        tvInterval.setText("interval = " + interval);
     }
 }
